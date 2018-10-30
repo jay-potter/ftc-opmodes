@@ -52,7 +52,7 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="Team Cataclysm - Basic: Linear OpMode", group="Linear Opmode")
 
-public class BasicOpMode_Linear extends LinearOpMode {
+public class CataclysmOpMode_Linear extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
