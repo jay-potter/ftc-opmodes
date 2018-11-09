@@ -52,12 +52,14 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="Team Cataclysm - Basic: Linear OpMode", group="Linear Opmode")
 
-public class CataclysmOpMode_Linear extends LinearOpMode {
+public class  CataclysmOpMode_Linear extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
+    private static final double normal_power_factor = 0.67; // 67%
+    private static final double boost_power_factor = 1.0; // 100%
 
     @Override
     public void runOpMode() {
@@ -75,6 +77,10 @@ public class CataclysmOpMode_Linear extends LinearOpMode {
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
 
+        // use a power scaling factor to allow a slower (67%)
+        // normal drive with the ability to "punch it" to 100%
+        double power_factor = normal_power_factor;
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
@@ -86,20 +92,28 @@ public class CataclysmOpMode_Linear extends LinearOpMode {
             double leftPower;
             double rightPower;
 
-            // Choose to drive using either Tank Mode, or POV Mode
-            // Comment out the method that's not used.  The default below is POV.
-
+            // Check and see if the driver wants to "punch it"
+            if (gamepad1.right_bumper)
+            {
+                power_factor = boost_power_factor;
+            }
+            else
+            {
+                // reset back to normal after the driver releases the button
+                power_factor = normal_power_factor;
+            }
+             
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
-            //double drive = -gamepad1.left_stick_y;
-            //double turn  =  gamepad1.right_stick_x;
-            //leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-            //rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
+            double drive = -gamepad1.left_stick_y * power_factor;
+            double turn  =  gamepad1.right_stick_x * power_factor;
+            leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
+            rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
-            leftPower  = -gamepad1.left_stick_y ;
-            rightPower = -gamepad1.right_stick_y ;
+            //leftPower  = -gamepad1.left_stick_y ;
+            //rightPower = -gamepad1.right_stick_y ;
 
             // Send calculated power to wheels
             leftDrive.setPower(leftPower);
