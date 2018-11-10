@@ -93,16 +93,10 @@ public class  CataclysmOpMode_Linear extends LinearOpMode {
             double rightPower;
 
             // Check and see if the driver wants to "punch it"
-            if (gamepad1.right_bumper)
-            {
-                power_factor = boost_power_factor;
-            }
-            else
-            {
-                // reset back to normal after the driver releases the button
-                power_factor = normal_power_factor;
-            }
-             
+            //   if so set our power factor to 100%
+            //   if not, reset it back to the default 67%
+            power_factor = gamepad1.right_bumper ? boost_power_factor : normal_power_factor;
+
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
             double drive = -gamepad1.left_stick_y * power_factor;
